@@ -1,34 +1,44 @@
 package main
 
-import "C"
-import "unsafe"
+import "encoding/binary"
 
-// FIXME return []byte
-func Crc32(data []byte) []byte {
-
+func Crc32(data []byte, polynomial uint32) []byte {
 	var (
-		i       int = 0
-		current byte
-		crc     uint = 0 ^ 0xFFFFFFFF
-		length  int  = len(data)
+		inx    int    = 0
+		crc    uint32 = 0 ^ 0xFFFFFFFF
+		length int    = len(data)
+
+		p7 uint32 = polynomial >> 1
+		p6 uint32 = polynomial >> 2
+		p5 uint32 = polynomial >> 3
+		p4 uint32 = polynomial >> 4
+		p3 uint32 = polynomial >> 5
+		p2 uint32 = (polynomial >> 6) ^ polynomial
+		p1 uint32 = (polynomial >> 7) ^ p7
 	)
 
-outer:
+loop:
 	if length == 0 {
-		goto eos
+		a := make([]byte, 4)
+		binary.LittleEndian.PutUint32(a, crc^0xFFFFFFFF)
+		return a
 	}
-	current = data[i]
-	crc ^= uint(current)
-	i++
-
-	for j := 0; j < 8; j++ {
-		crc = (crc >> 1) ^ (crc&1)*0x82F63B78
-	}
-
 	length--
-	goto outer
-eos:
 
-	r := crc ^ 0xFFFFFFFF
-	return ((*[4]byte)(unsafe.Pointer(&r)))[:]
+	crc ^= uint32(data[inx])
+	inx++
+
+	var a = (uint32(-int32(crc&1)) & p1)
+	var b = (uint32(-int32((crc>>1)&1)) & p2)
+	var c = (uint32(-int32((crc>>2)&1)) & p3)
+	var d = (uint32(-int32((crc>>3)&1)) & p4)
+	var e = (uint32(-int32((crc>>4)&1)) & p5)
+	var f = (uint32(-int32((crc>>5)&1)) & p6)
+	var g = (uint32(-int32((crc>>6)&1)) & p7)
+	var h = (uint32(-int32((crc>>7)&1)) & polynomial)
+	var i = (crc >> 8)
+
+	crc = a ^ b ^ c ^ d ^ e ^ f ^ g ^ h ^ i
+
+	goto loop
 }

@@ -3,59 +3,84 @@ package main
 import (
 	"encoding/hex"
 	"testing"
+	"unsafe"
 )
 
-/*
-func BenchmarkDammSmall(b *testing.B) {
+func naive(data []byte, polynomial uint) []byte {
+	var crc uint = 0 ^ 0xFFFFFFFF
+
+	for _, current := range data {
+		crc ^= uint(current)
+		for j := 0; j < 8; j++ {
+			crc = (crc >> 1) ^ (crc&1)*polynomial
+		}
+	}
+
+	r := crc ^ 0xFFFFFFFF
+	return ((*[4]byte)(unsafe.Pointer(&r)))[:]
+}
+
+func BenchmarkNaiveSmall(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		DammDigit("123")
+		naive([]byte("aaaaaaa"), 0xEDB88320)
 	}
 }
 
-func BenchmarkDammLarge(b *testing.B) {
+func BenchmarkNaiveLarge(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		DammDigit("00123014764700968325")
+		naive([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
 	}
 }
 
-func BenchmarkDammSmallParallel(b *testing.B) {
+func BenchmarkNaiveSmallParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			DammDigit("123")
+			naive([]byte("aaaaaaa"), 0xEDB88320)
 		}
 	})
 }
 
-func BenchmarkDammLargeParallel(b *testing.B) {
+func BenchmarkNaiveLargeParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			DammDigit("00123014764700968325")
+			naive([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
 		}
 	})
-}*/
-/*
-func TestCrc32String(t *testing.T) {
-	input := []byte("Lorem ipsum")
-	crc := Crc32(input)
+}
 
-	if crc != 0xA8 {
-		t.Errorf("Invalid CRC32. expected 0xa8 got 0x" + hex.EncodeToString([]byte{byte(crc)}))
+func BenchmarkCrcSmall(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		Crc32([]byte("aaaaaaa"), 0xEDB88320)
 	}
 }
 
-func TestCrc32LiteralBytes(t *testing.T) {
-	input := []byte{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39}
-	crc := Crc32(input)
-
-	if crc != 0xF4 {
-		t.Errorf("Invalid CRC32. expected 0xf4 got 0x" + hex.EncodeToString([]byte{byte(crc)}))
+func BenchmarkCrcLarge(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		Crc32([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
 	}
-}*/
+}
+
+func BenchmarkCrcSmallParallel(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			Crc32([]byte("aaaaaaa"), 0xEDB88320)
+		}
+	})
+}
+
+func BenchmarkCrcLargeParallel(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			Crc32([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
+		}
+	})
+}
 
 func TestCrc32EmptyVector(t *testing.T) {
 	input := []byte{}
-	crc := Crc32(input)
-	i := "00000000"
+	crc := Crc32(input, 0xEDB88320)
+	ref := naive(input, 0xEDB88320)
+	i := hex.EncodeToString(ref)
 	j := hex.EncodeToString(crc)
 
 	if i != j {
@@ -65,11 +90,24 @@ func TestCrc32EmptyVector(t *testing.T) {
 
 func TestCrc32Vector1(t *testing.T) {
 	input := []byte("a")
-	crc := Crc32(input)
-	i := "3043d0c1"
+	crc := Crc32(input, 0xEDB88320)
+	ref := naive(input, 0xEDB88320)
+	i := hex.EncodeToString(ref)
 	j := hex.EncodeToString(crc)
 
 	if i != j {
-		t.Errorf("Invalid CRC32. expected 0x" + i + " got 0x" + j)
+		t.Errorf("Invalid CRC32. expected naive : 0x" + i + " got Crc32 : 0x" + j)
+	}
+}
+
+func TestCrc32Vector2(t *testing.T) {
+	input := []byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	crc := Crc32(input, 0xEDB88320)
+	ref := naive(input, 0xEDB88320)
+	i := hex.EncodeToString(ref)
+	j := hex.EncodeToString(crc)
+
+	if i != j {
+		t.Errorf("Invalid CRC32. expected naive : 0x" + i + " got Crc32 : 0x" + j)
 	}
 }

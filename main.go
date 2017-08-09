@@ -17,7 +17,7 @@ func main() {
 		return
 	}
 
-	crc := Crc32([]byte(os.Args[1]))
+	crc := Crc32([]byte(os.Args[1]), 0xEDB88320)
 	os.Stdout.Write([]byte(hex.EncodeToString(crc)))
 
 	os.Exit(0)
