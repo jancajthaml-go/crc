@@ -2,9 +2,9 @@ package main
 
 import "encoding/binary"
 
-func Crc32(data []byte, polynomial uint32) []byte {
+func CRC32(data []byte, polynomial uint32) []byte {
 	var (
-		inx    int    = 0
+		idx    int    = 0
 		crc    uint32 = 0 ^ 0xFFFFFFFF
 		length int    = len(data)
 		result        = make([]byte, 4)
@@ -24,8 +24,8 @@ loop:
 	}
 	length--
 
-	crc ^= uint32(data[inx])
-	inx++
+	crc ^= uint32(data[idx])
+	idx++
 
 	crc = ((uint32(-int32(crc&1)) & p1) ^
 		(uint32(-int32((crc>>1)&1)) & p2) ^

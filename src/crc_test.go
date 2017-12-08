@@ -50,20 +50,20 @@ func BenchmarkNaiveLargeParallel(b *testing.B) {
 
 func BenchmarkCrcSmall(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		Crc32([]byte("aaaaaaa"), 0xEDB88320)
+		CRC32([]byte("aaaaaaa"), 0xEDB88320)
 	}
 }
 
 func BenchmarkCrcLarge(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		Crc32([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
+		CRC32([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
 	}
 }
 
 func BenchmarkCrcSmallParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			Crc32([]byte("aaaaaaa"), 0xEDB88320)
+			CRC32([]byte("aaaaaaa"), 0xEDB88320)
 		}
 	})
 }
@@ -71,14 +71,14 @@ func BenchmarkCrcSmallParallel(b *testing.B) {
 func BenchmarkCrcLargeParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			Crc32([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
+			CRC32([]byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"), 0xEDB88320)
 		}
 	})
 }
 
 func TestCrc32EmptyVector(t *testing.T) {
 	input := []byte{}
-	crc := Crc32(input, 0xEDB88320)
+	crc := CRC32(input, 0xEDB88320)
 	ref := naive(input, 0xEDB88320)
 	i := hex.EncodeToString(ref)
 	j := hex.EncodeToString(crc)
@@ -90,8 +90,8 @@ func TestCrc32EmptyVector(t *testing.T) {
 
 func TestCrc32Vector1(t *testing.T) {
 	input := []byte("a")
-	crc := Crc32(input, 0xEDB88320)
-	ref := naive(input, 0xEDB88320)
+	crc := CRC32(input, 0x04C11DB7)
+	ref := naive(input, 0x04C11DB7)
 	i := hex.EncodeToString(ref)
 	j := hex.EncodeToString(crc)
 
@@ -102,7 +102,7 @@ func TestCrc32Vector1(t *testing.T) {
 
 func TestCrc32Vector2(t *testing.T) {
 	input := []byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-	crc := Crc32(input, 0xEDB88320)
+	crc := CRC32(input, 0xEDB88320)
 	ref := naive(input, 0xEDB88320)
 	i := hex.EncodeToString(ref)
 	j := hex.EncodeToString(crc)

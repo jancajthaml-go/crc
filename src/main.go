@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"os"
 )
 
@@ -17,8 +16,11 @@ func main() {
 		return
 	}
 
-	crc := Crc32([]byte(os.Args[1]), 0xEDB88320)
-	os.Stdout.Write([]byte(hex.EncodeToString(crc)))
+	// FIXME read from input file
+	// FIXME read polynomial from command line args
+
+	crc := CRC32([]byte(os.Args[1]), 0x04C11DB7)
+	os.Stdout.Write(crc)
 
 	os.Exit(0)
 }
