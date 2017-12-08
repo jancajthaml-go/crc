@@ -17,10 +17,4 @@ crc.Crc32([]byte("abcd"), 0x04C11DB7)
 ```
 
 ### Performance ###
-
-```
-BenchmarkLevensteinParallel-4     20000000        68.4 ns/op
-BenchmarkLevensteinSerial-4       10000000        129 ns/op
-```
-
-test on your own by running `make benchmark`
+> WIP
