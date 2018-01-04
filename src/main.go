@@ -12,7 +12,7 @@ func main() {
 	}()
 
 	if len(os.Args) != 2 {
-		os.Stderr.Write([]byte("Usage           : ./crc <input>\nValid Example   : ./crc 123; echo \"$?\""))
+		os.Stderr.Write([]byte("Usage : ./crc <input>\n"))
 		return
 	}
 
