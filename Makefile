@@ -1,21 +1,15 @@
-PKG_OS = $$(if [ -z ${GOOS} ] ; then echo darwin ; else echo ${GOOS} ; fi)
-PKG_ARCH = $$(if [ -z ${GOARCH} ] ; then echo amd64 ; else echo ${GOARCH} ; fi)
-
 .PHONY: all
-all: clean build benchmark
-
-.PHONY: clean
-clean:
-	@go clean
-
-.PHONY: build
-build:
-	@GOOS=$(PKG_OS) GOARCH=$(PKG_ARCH) go build -a -o pkg/crc-$(PKG_OS)-$(PKG_ARCH) src/crc.go src/main.go
+all: test benchmark
 
 .PHONY: test
 test:
-	@go test -v ./src/...
+	@go test -v ./...
 
 .PHONY: benchmark
 benchmark:
-	@go test -v ./src/... -bench=.
+	@go test \
+	  -v ./... \
+	  -run=^$ \
+	  -bench=. \
+	  -benchmem \
+	  -timeout=1m
