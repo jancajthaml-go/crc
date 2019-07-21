@@ -11,7 +11,7 @@ Implementation is tableless with variable 32bit polynomial and same speed as zli
 ### Usage ###
 
 ```
-import "github.com/jancajthaml-go/crc"
+import "github.com/jancajthaml-go/crc32"
 
 crc.Crc32([]byte("abcd"), 0x04C11DB7)
 ```
