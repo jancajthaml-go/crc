@@ -4,10 +4,8 @@ import "encoding/binary"
 
 func CRC32(data []byte, polynomial uint32) []byte {
 	var (
-		idx    int    = 0
 		crc    uint32 = 0 ^ 0xFFFFFFFF
-		length int    = len(data)
-		result        = make([]byte, 4)
+		result []byte = make([]byte, 4)
 		p7     uint32 = polynomial >> 1
 		p6     uint32 = polynomial >> 2
 		p5     uint32 = polynomial >> 3
@@ -18,14 +16,13 @@ func CRC32(data []byte, polynomial uint32) []byte {
 	)
 
 loop:
-	if length == 0 {
-		binary.LittleEndian.PutUint32(result, crc^0xFFFFFFFF)
+	if len(data) == 0 {
+		binary.LittleEndian.PutUint32(result, crc)
 		return result
 	}
-	length--
 
-	crc ^= uint32(data[idx])
-	idx++
+	crc ^= uint32(data[0])
+	data = data[1:]
 
 	crc = ((uint32(-int32(crc&1)) & p1) ^
 		(uint32(-int32((crc>>1)&1)) & p2) ^
