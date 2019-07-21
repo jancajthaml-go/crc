@@ -80,7 +80,7 @@ func TestCrc32EmptyVector(t *testing.T) {
 	c := hex.EncodeToString(standardResult)
 
 	if a != b || b != c {
-		t.Errorf("Invalid CRC32. standard 0x" + c + " naive 0x" + a + " library 0x" + a)
+		t.Errorf("Invalid CRC32. standard 0x" + c + " naive 0x" + b + " library 0x" + a)
 	}
 }
 
@@ -95,12 +95,12 @@ func TestCrc32Vector1(t *testing.T) {
 	c := hex.EncodeToString(standardResult)
 
 	if a != b || b != c {
-		t.Errorf("Invalid CRC32. standard 0x" + c + " naive 0x" + a + " library 0x" + a)
+		t.Errorf("Invalid CRC32. standard 0x" + c + " naive 0x" + b + " library 0x" + a)
 	}
 }
 
 func TestCrc32Vector2(t *testing.T) {
-	input := []byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	input := []byte(largeText)
 	libResult := CRC32(input, IEEE)
 	naiveResult := naive(input, IEEE)
 	standardResult := standard(input)
@@ -110,6 +110,6 @@ func TestCrc32Vector2(t *testing.T) {
 	c := hex.EncodeToString(standardResult)
 
 	if a != b || b != c {
-		t.Errorf("Invalid CRC32. standard 0x" + c + " naive 0x" + a + " library 0x" + a)
+		t.Errorf("Invalid CRC32. standard 0x" + c + " naive 0x" + b + " library 0x" + a)
 	}
 }
