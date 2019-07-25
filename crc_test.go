@@ -29,7 +29,17 @@ func TestCrc32EmptyVector(t *testing.T) {
 	AssetEqual(t, standardResult, libResult)
 }
 
-// https://crccalc.com/
+func TestPrecalculatedNormalized(t *testing.T) {
+	input := []byte("abcdefgh")
+
+	t.Log("CRC-32/BZIP2")
+	{
+		c := New(0x04C11DB7, 0xFFFFFFFF, 0xFFFFFFFF)
+		AssetEqual(t, 0x5024EC61, c.Checksum(input))
+	}
+
+}
+
 func TestNormalized(t *testing.T) {
 
 	input := []byte("abcdefgh")
@@ -70,5 +80,23 @@ func BenchmarkCrcLarge(b *testing.B) {
 	b.SetBytes(int64(len(largeText)))
 	for n := 0; n < b.N; n++ {
 		Checksum(largeText, IEEE, 0xFFFFFFFF, 0x00000000)
+	}
+}
+
+func BenchmarkPrecalculatedCrcSmall(b *testing.B) {
+	c := New(IEEE, 0xFFFFFFFF, 0x00000000)
+	b.ResetTimer()
+	b.SetBytes(int64(len(smallText)))
+	for n := 0; n < b.N; n++ {
+		c.Checksum(smallText)
+	}
+}
+
+func BenchmarkPrecalculatedCrcLarge(b *testing.B) {
+	c := New(IEEE, 0xFFFFFFFF, 0x00000000)
+	b.ResetTimer()
+	b.SetBytes(int64(len(largeText)))
+	for n := 0; n < b.N; n++ {
+		c.Checksum(largeText)
 	}
 }
