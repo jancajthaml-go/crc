@@ -6,13 +6,17 @@ CRC which encode messages by adding a fixed-length check value, for the purpose 
 
 However, it is not suitable for protection against intentional alteration of data.
 
-Implementation is tableless with variable 32bit polynomial.
+Implementation provides both tableless and tabular checksum functions with variable 32bit polynomial.
 
 ### Performance ###
 
 ```
-BenchmarkCrcSmall  60.54 MB/s  0 B/op  0 allocs/op
-BenchmarkCrcLarge  26.07 MB/s  0 B/op  0 allocs/op
+BenchmarkStandardSmall          167.08 MB/s    0 B/op  0 allocs/op
+BenchmarkStandardLarge          16383.42 MB/s  0 B/op  0 allocs/op
+BenchmarkCrcSmall               55.50 MB/s     0 B/op  0 allocs/op
+BenchmarkCrcLarge               23.37 MB/s     0 B/op  0 allocs/op
+BenchmarkPrecalculatedCrcSmall  413.72 MB/s    0 B/op  0 allocs/op
+BenchmarkPrecalculatedCrcLarge  333.29 MB/s    0 B/op  0 allocs/op
 ```
 
 ### Usage ###
@@ -25,7 +29,10 @@ poly := 0x04C11DB7
 init := 0xFFFFFFFF
 xorout := 0xFFFFFFFF
 
+// for tableless
 crc32.Checksum(data, poly, init, xorout) // 0x5024EC61
+
+// for tabular
+instance = crc32.New(poly, init, xorout)
+instance.Checksum(data) // 0x5024EC61
 ```
-
-
