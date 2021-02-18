@@ -3,17 +3,12 @@ all: test benchmark
 
 .PHONY: test
 test:
-	@\
-	go test -v ./...
+	@go test -v ./...
 
 .PHONY: benchmark
 benchmark:
-	@\
-	GOMAXPROCS=1 \
-	\
-	go test \
-		-v ./... \
-		-run=^@$ \
-		-bench=. \
-		-benchmem \
-		-benchtime=5s
+	@GOMAXPROCS=1 go test -v ./... -run=nil -bench=. -benchmem -benchtime=10000x
+
+.PHONY: build
+build:
+	@go build -gcflags '-m -m' ./crc.go
