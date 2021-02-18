@@ -10,14 +10,12 @@ type CRC struct {
 
 // New returns CRC32 instance with precalculated table
 func New(poly uint32, init uint32, xorout uint32) CRC {
-	result := CRC{
+	return CRC{
 		poly:   poly,
 		xorout: xorout,
 		init:   init,
 		table:  createTable(poly, init, xorout),
 	}
-
-	return result
 }
 
 func createTable(poly uint32, init uint32, xorout uint32) []uint32 {
@@ -52,7 +50,6 @@ func (crc *CRC) Checksum(data []byte) uint32 {
 		pos = uint8((result >> 24) & 0xFF)
 		result = (result << 8) & 0xFFFFFFFF
 		result = (result ^ crc.table[pos]) & 0xFFFFFFFF
-
 	}
 	return result ^ crc.xorout
 }
